@@ -2,52 +2,34 @@ package com.cabInvoiceGenerator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class InvoiceServiceTest {
-	
-    InvoiceGenerator invoiceGenerator = null;
+	static InvoiceService invoiceService = null;
+	static Ride[] rides = null;
+	static RideRepo rideRepository = new RideRepo();
+	static InvoiceSummary expectedInvoiceSummary = null;
 
-	@BeforeEach
-	public void setUp() {
-		invoiceGenerator = new InvoiceGenerator();
+	@BeforeAll
+	public static void setUp() {
+		invoiceService = new InvoiceService();
+		rides = new Ride[] { new Ride(CabRide.NORMAL, 2.0, 5), new Ride(CabRide.PREMIUM, 0.1, 1) };
+		expectedInvoiceSummary = new InvoiceSummary(2, 45);
 	}
 
-
-	@Test
-	void givenDistanceAndTime_shouldReturn_totalFare() {
-		InvoiceGenerator invoiceGenerator = new InvoiceGenerator();
-		double distance = 2.0;
-		int time = 5;
-		double fare = invoiceGenerator.calculateFare(distance, time);
-		assertEquals(25.0, fare, 0.0);
-	}
-
-	@Test
-	public void givenLessDistanceOrTime_ShouldReturn_minFare() {
-		InvoiceGenerator invoiceGenerator = new InvoiceGenerator();
-		double distance = 0.1;
-		int time = 1;
-		double fare = invoiceGenerator.calculateFare(distance, time);
-		assertEquals(5.0, fare, 0.0);
-	}
-	
 	@Test
 	public void givenMultipleRides_shouldReturn_InvoiceSummary() {
-		Ride[] rides = { new Ride(2.0, 5), new Ride(0.1, 1) };
-		InvoiceSummary summary = invoiceGenerator.calculateFare(rides);
-		InvoiceSummary expectedInvoiceSummary = new InvoiceSummary(2, 30);
+		InvoiceSummary summary = invoiceService.calculateFare(rides);
 		assertEquals(expectedInvoiceSummary, summary);
 	}
-	
+
 	@Test
 	public void givenUserIDAndRides_shouldReturn_InvoiceSummary() {
-		String userId = "Sakshat@14";
-		Ride[] rides = { new Ride(2.0, 5), new Ride(0.1, 1) };
-		invoiceGenerator.addRides(userId, rides);
-		InvoiceSummary summary = invoiceGenerator.getInvoiceSummary(userId);
-		InvoiceSummary expectedInvoiceSummary = new InvoiceSummary(2, 30);
+		String userId = "abc@xyz";
+		rideRepository.addRides(userId, rides);
+		invoiceService.setRideRepository(rideRepository);
+		InvoiceSummary summary = invoiceService.getInvoiceSummary(userId);
 		assertEquals(expectedInvoiceSummary, summary);
 	}
-}	
+}
