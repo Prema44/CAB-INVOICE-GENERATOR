@@ -2,9 +2,18 @@ package com.cabInvoiceGenerator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class InvoiceServiceTest {
+	
+    InvoiceGenerator invoiceGenerator = null;
+
+	@BeforeEach
+	public void setUp() {
+		invoiceGenerator = new InvoiceGenerator();
+	}
+
 
 	@Test
 	void givenDistanceAndTime_shouldReturn_totalFare() {
@@ -25,10 +34,10 @@ class InvoiceServiceTest {
 	}
 	
 	@Test
-	public void givenMultipleRides_shouldReturn_totalFare() {
-		InvoiceGenerator invoiceGenerator = new InvoiceGenerator();
+	public void givenMultipleRides_shouldReturn_InvoiceSummary() {
 		Ride[] rides = { new Ride(2.0, 5), new Ride(0.1, 1) };
-		double fare = invoiceGenerator.calculateFare(rides);
-		assertEquals(30, fare, 0.0);
+		InvoiceSummary summary = invoiceGenerator.calculateFare(rides);
+		InvoiceSummary expectedInvoiceSummary = new InvoiceSummary(2, 30);
+		assertEquals(expectedInvoiceSummary, summary);
 	}
 }	
